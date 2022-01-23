@@ -1,0 +1,8 @@
+# venv
+env
+
+#pycache
+__pycache__
+
+# data
+*.json
