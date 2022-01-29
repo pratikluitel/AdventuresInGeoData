@@ -8,3 +8,6 @@ __pycache__
 *.json
 *.geojson
 *.csv
+
+# output folder
+visualizations
