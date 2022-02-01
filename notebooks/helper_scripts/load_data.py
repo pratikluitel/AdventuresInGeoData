@@ -19,5 +19,5 @@ for feature in data['features']:
             'coordinates':geometry['coordinates'][:2]
         }
 
-with open('../data/formatted_data.json','w') as f:
+with open('../../data/formatted_data.json','w') as f:
     json.dump(formatted_data, f, indent=3, default=str)
