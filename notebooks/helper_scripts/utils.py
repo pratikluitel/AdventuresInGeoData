@@ -1,6 +1,5 @@
 from typing import Callable
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon
 
 def offset(coord, xoff=0, yoff=0):
     return (coord[0]+xoff, coord[1]+yoff)
@@ -10,28 +9,38 @@ def transform_nepal(polygon_center_coords, district):
     STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED
     """
     coords = polygon_center_coords
-    if district in ('DARCHULA','KAVRE','JHAPA','BHOJPUR',
-                    'SAPTARI','BAJURA','RASUWA','JAJARKOT','RUKUM','MUGU',
-                    'GULMI','PYUTHAN','PALPA','NAWALPARASI','CHITWAN'):
-        coords = offset(coords, yoff=-0.05)
-    elif district in ('SINDHULI'):
+    if district in ('SINDHULI','KAILALI','DAILEKH','SALYAN','KASKI','TANAHUN','MANANG','SIRAHA'
+                    ,'LAMJUNG','BARDIYA','BANKE','DANG','KAPILBASTU','ROLPA','MUSTANG','SARLAHI'):
         coords = offset(coords, yoff=-0.04)
-    elif district in ('KHOTANG'):
-        coords = offset(coords, xoff=-0.02, yoff=-0.05)
-    elif district in ('SYANGJA'):
-        coords = offset(coords, xoff=0.02,yoff=-0.06)
-    elif district in ('DADELDHURA','BAJHANG','GORKHA'):
-        coords = offset(coords, xoff=0.04, yoff=-0.01)
+    elif district in ('DARCHULA','KAVRE','JHAPA','BHOJPUR','DADELDHURA',
+                    'SAPTARI','BAJURA','JAJARKOT','RUKUM','MUGU',
+                    'GULMI','PYUTHAN','PALPA','NAWALPARASI','SAPTARI'):
+        coords = offset(coords, yoff=-0.05)
+    elif district in ('NUWAKOT','DOLAKHA','TAPLEJUNG'):
+        coords = offset(coords, yoff=-0.08)
+    elif district in ('SURKHET', 'KALIKOT','SINDHUPALCHOK'):
+        coords = offset(coords, yoff=-0.1)
     elif district in ('KANCHANPUR', 'MAKWANPUR'):
         coords = offset(coords, xoff=-0.03)
-    elif district in ('SURKHET', 'KALIKOT','NUWAKOT','SINDHUPALCHOK','SOLUKHUMBU'):
-        coords = offset(coords, yoff=-0.1)
-    elif district in ('DHADING', 'RAMECHHAP'):
-        coords = offset(coords, yoff=-0.14, xoff=-0.08)
-    elif district in ('BAGLUNG','MYAGDI'):
+    elif district in ('SOLUKHUMBU'):
+        coords = offset(coords, yoff=-0.1, xoff=0.03)
+    elif district in ('KHOTANG','JUMLA','BAITADI','RASUWA','MYAGDI'):
+        coords = offset(coords, xoff=-0.02, yoff=-0.05)
+    elif district in ('BAGLUNG'):
         coords = offset(coords, xoff=-0.1, yoff=-0.02)
     elif district in ('UDAYAPUR'):
-        coords = offset(coords, xoff=-0.12)
+        coords = offset(coords, xoff=-0.12, yoff=0.01)
+    elif district in ('DHADING'):
+        coords = offset(coords, yoff=-0.14, xoff=-0.08)
+    elif district in ('RAMECHHAP'):
+        coords = offset(coords, yoff=-0.14, xoff=-0.09)
+    elif district in ('SYANGJA'):
+        coords = offset(coords, xoff=0.02,yoff=-0.06)
+    elif district in ('BAJHANG','GORKHA','CHITWAN'):
+        coords = offset(coords, xoff=0.04, yoff=-0.05)
+    elif district in ('RUPANDEHI'):
+        coords = offset(coords, xoff=0.03, yoff=-0.04)
+
     return coords
 
 def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
@@ -64,7 +73,7 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         Someday.
         """
 
-        text = f'{x[annotation_field]}\n{x[annotation_value_field]}'
+        text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
         polygon = x.geometry
 
         polygon_center_coords = polygon.centroid.coords[0]
