@@ -82,22 +82,26 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         small_districts = ('PARBAT','ARGHAKHANCHI', 'KATHMANDU', 'BHAKTAPUR', 'LALITPUR','RAUTAHAT',
                             'MAHOTTARI', 'DHANUSHA', 'DHANKUTA', 'TEHRATHUM', 'PANCHTHAR')
 
-        # Generate labels from A-Z if small districts are encountered
-        small_district_label_map = {}
+        # need these for dynamic text size and other stuff
+        apparant_width = plt.gcf().get_size_inches()[0]*ax.figure.dpi
+        width = 1200 if apparant_width<=1200 else apparant_width
 
+        fontsize = width/240 if x[annotation_field] in small_districts else width/270
+
+        # Generate labels from A-Z if small districts are encountered
         if x[annotation_field] in small_districts:
-            text = f'{chr(small_districts.index(x[annotation_field])+98).upper()}.'
-            small_district_label_map[text] = x[annotation_field]
+            ann_number = small_districts.index(x[annotation_field])
+
+            # converting the number to a representation of captial text i.e. 1->A, 2->B, etc.
+            text = f'{chr(ann_number+97).upper()}.'
+
+            # Text box to label small districts
+            ax.text(0.05, 0.3 - ann_number*width/108000, f'{text[:-1]} - {x[annotation_field].title()}: {x[annotation_value_field]}',
+                        fontsize=fontsize+1, transform=ax.transAxes, verticalalignment='top', weight='bold', bbox={'color': 'lightgray'})
         else:
             text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
 
         applied_color = highlight_color if x[annotation_value_field] > threshold else color
-
-        # for fontsize
-        apparant_width = plt.gcf().get_size_inches()[0]*ax.figure.dpi
-        width = 1200 if apparant_width<=1200 else apparant_width
-       
-        fontsize = width/240 if x[annotation_field] in small_districts else width/270
         
         polygon = x.geometry
         polygon_center_coords = polygon.centroid.coords[0]
