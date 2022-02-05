@@ -25,7 +25,7 @@ def transform_nepal(polygon_center_coords:Tuple, district:str) -> Tuple:
     elif district in ('KANCHANPUR', 'MAKWANPUR'):
         coords = offset(coords, xoff=-0.03)
     elif district in ('PARBAT','ARGHAKHANCHI'):
-        coords = offset(coords,xoff=0.03)
+        coords = offset(coords,xoff=0.04)
     elif district in ('SOLUKHUMBU'):
         coords = offset(coords, yoff=-0.1, xoff=0.03)
     elif district in ('KHOTANG','JUMLA','BAITADI','RASUWA','MYAGDI'):
@@ -82,18 +82,27 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         small_districts = ('PARBAT','ARGHAKHANCHI', 'KATHMANDU', 'BHAKTAPUR', 'LALITPUR','RAUTAHAT',
                             'MAHOTTARI', 'DHANUSHA', 'DHANKUTA', 'TEHRATHUM', 'PANCHTHAR')
 
-        text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
-
         # Generate labels from A-Z if small districts are encountered
         small_district_label_map = {}
+
         if x[annotation_field] in small_districts:
             text = f'{chr(small_districts.index(x[annotation_field])+98).upper()}.'
             small_district_label_map[text] = x[annotation_field]
+        else:
+            text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
+
+        applied_color = highlight_color if x[annotation_value_field] > threshold else color
+
+        # for fontsize
+        apparant_width = plt.gcf().get_size_inches()[0]*ax.figure.dpi
+        width = 1200 if apparant_width<=1200 else apparant_width
+       
+        fontsize = width/240 if x[annotation_field] in small_districts else width/270
         
         polygon = x.geometry
-
         polygon_center_coords = polygon.centroid.coords[0]
         
+        ################################## DYNAMIC TRANSFORMATION LOGIC ##################################################################
         # # The width of the rectangle bounding polygon
         # min_bounding_rect_width = abs(polygon.envelope.exterior.coords.xy[0][1] - polygon.envelope.exterior.coords.xy[0][0])
         # annotation_text = ax.text(polygon.centroid.coords[0][0], polygon.centroid.coords[0][1],text,fontsize=9)
@@ -103,15 +112,14 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         # # Currently, the above two widths are not in the same coordinate system, need to fix it before comparing
         # # logic to be used:
         # # - if annotation width> polygon width, shift the text to an appropriate area outside the map bounds and draw a annotation line
+        ##################################################################################################################################
 
-        ################# STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED ###################
+        ################# STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED #####################################
         transformed_center = transform_nepal(polygon_center_coords, x[annotation_field])
+        ##################################################################################################################################
+
+        # To fix while adjusting for projections
         # polygon_center_coords = transform.transform_point(transformed_center[0], transformed_center[1], gcrs.ccrs.PlateCarree())
-        ################################################################################################################
 
-        applied_color = highlight_color if x[annotation_value_field] > threshold else color
-        fontsize = 9 if x[annotation_field] in small_districts else 8
-
-        return ax.annotate(text=text, xy=transformed_center,
-            color=applied_color, ha='center', fontsize=fontsize, weight='bold')
+        return ax.annotate(text=text, xy=transformed_center, color=applied_color, ha='center', fontsize=fontsize, weight='bold')
     return annotate_polygon
