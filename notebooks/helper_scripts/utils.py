@@ -1,15 +1,15 @@
-from typing import Callable
+from typing import Callable, Tuple
 import matplotlib.pyplot as plt
 
-def offset(coord, xoff=0, yoff=0):
+def offset(coord:Tuple, xoff:float=0, yoff:float=0) -> Tuple:
     return (coord[0]+xoff, coord[1]+yoff)
 
-def transform_nepal(polygon_center_coords, district):
+def transform_nepal(polygon_center_coords:Tuple, district:str) -> Tuple:
     """
     STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED
     """
     coords = polygon_center_coords
-    if district in ('SINDHULI','KAILALI','DAILEKH','SALYAN','KASKI','TANAHUN','MANANG','SIRAHA'
+    if district in ('SINDHULI','KAILALI','DAILEKH','SALYAN','KASKI','TANAHUN','MANANG','SIRAHA','ILAM'
                     ,'LAMJUNG','BARDIYA','BANKE','DANG','KAPILBASTU','ROLPA','MUSTANG','SARLAHI'):
         coords = offset(coords, yoff=-0.04)
     elif district in ('DARCHULA','KAVRE','JHAPA','BHOJPUR','DADELDHURA',
@@ -20,8 +20,12 @@ def transform_nepal(polygon_center_coords, district):
         coords = offset(coords, yoff=-0.08)
     elif district in ('SURKHET', 'KALIKOT','SINDHUPALCHOK'):
         coords = offset(coords, yoff=-0.1)
+    elif district in ('BHAKTAPUR'):
+        coords = offset(coords,yoff=-0.01)
     elif district in ('KANCHANPUR', 'MAKWANPUR'):
         coords = offset(coords, xoff=-0.03)
+    elif district in ('PARBAT','ARGHAKHANCHI'):
+        coords = offset(coords,xoff=0.03)
     elif district in ('SOLUKHUMBU'):
         coords = offset(coords, yoff=-0.1, xoff=0.03)
     elif district in ('KHOTANG','JUMLA','BAITADI','RASUWA','MYAGDI'):
@@ -40,6 +44,8 @@ def transform_nepal(polygon_center_coords, district):
         coords = offset(coords, xoff=0.04, yoff=-0.05)
     elif district in ('RUPANDEHI'):
         coords = offset(coords, xoff=0.03, yoff=-0.04)
+    elif district in ('OKHALDHUNGA'):
+        coords = offset(coords, xoff=0.02, yoff=-0.09)
 
     return coords
 
@@ -56,12 +62,13 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
     returns a function that generates an annotation
     for a polygon on the given axes
     """
-    annotation_field, annotation_value_field = kwarg_dict['annotation_field'] , kwarg_dict['annotation_value_field']
-    threshold = kwarg_dict['threshold']
+    
+    annotation_field, annotation_value_field, threshold = kwarg_dict['annotation_field'] , kwarg_dict['annotation_value_field'], kwarg_dict['threshold']
+
     try:
         color, highlight_color = kwarg_dict['color'], kwarg_dict['highlight_color']
     except KeyError:
-        color, highlight_color = 'black','white'
+        color, highlight_color = 'black', 'white'
 
     def annotate_polygon(x):
         """
@@ -72,12 +79,20 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
 
         Someday.
         """
+        small_districts = ('PARBAT','ARGHAKHANCHI', 'KATHMANDU', 'BHAKTAPUR', 'LALITPUR','RAUTAHAT',
+                            'MAHOTTARI', 'DHANUSHA', 'DHANKUTA', 'TEHRATHUM', 'PANCHTHAR')
 
         text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
+
+        # Generate labels from A-Z if small districts are encountered
+        small_district_label_map = {}
+        if x[annotation_field] in small_districts:
+            text = f'{chr(small_districts.index(x[annotation_field])+98).upper()}.'
+            small_district_label_map[text] = x[annotation_field]
+        
         polygon = x.geometry
 
         polygon_center_coords = polygon.centroid.coords[0]
-        applied_color = highlight_color if x[annotation_value_field] > threshold else color
         
         # # The width of the rectangle bounding polygon
         # min_bounding_rect_width = abs(polygon.envelope.exterior.coords.xy[0][1] - polygon.envelope.exterior.coords.xy[0][0])
@@ -90,14 +105,13 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         # # - if annotation width> polygon width, shift the text to an appropriate area outside the map bounds and draw a annotation line
 
         ################# STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED ###################
-
-        # line needed for: 
-        polygon_center_coords = transform_nepal(polygon_center_coords, x[annotation_field])
-        if x[annotation_field] in ('ARGHAKHANCHI', 'PARBAT', 'KATHMANDU', 'BHAKTAPUR', 'LALITPUR', 'RAUTAHAT', 'MAHOTTARI', 'DHANUSHA', 'OKHALDHUNGA', 'DHANKUTA', 'TEHRATHUM', 'PANCHTHAR'):
-            return
-
+        transformed_center = transform_nepal(polygon_center_coords, x[annotation_field])
+        # polygon_center_coords = transform.transform_point(transformed_center[0], transformed_center[1], gcrs.ccrs.PlateCarree())
         ################################################################################################################
 
-        return ax.annotate(text=text, xy=polygon_center_coords, xytext=polygon_center_coords,
-            color=applied_color, ha='center', fontsize=8,weight='bold')
+        applied_color = highlight_color if x[annotation_value_field] > threshold else color
+        fontsize = 9 if x[annotation_field] in small_districts else 8
+
+        return ax.annotate(text=text, xy=transformed_center,
+            color=applied_color, ha='center', fontsize=fontsize, weight='bold')
     return annotate_polygon
