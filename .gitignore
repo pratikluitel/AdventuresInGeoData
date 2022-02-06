@@ -5,9 +5,10 @@ env
 __pycache__
 
 # data
-*.json
-*.geojson
-*.csv
+data/*
+
+# test
+test.*
 
 # output folder
 visualizations
