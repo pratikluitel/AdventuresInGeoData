@@ -65,6 +65,8 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
     
     annotation_field, annotation_value_field, threshold = kwarg_dict['annotation_field'] , kwarg_dict['annotation_value_field'], kwarg_dict['threshold']
 
+    small_polygon_map = kwarg_dict['small_polygon_map']
+
     try:
         color, highlight_color = kwarg_dict['color'], kwarg_dict['highlight_color']
     except KeyError:
@@ -79,25 +81,17 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
 
         Someday.
         """
-        small_districts = ('PARBAT','ARGHAKHANCHI', 'KATHMANDU', 'BHAKTAPUR', 'LALITPUR','RAUTAHAT',
-                            'MAHOTTARI', 'DHANUSHA', 'DHANKUTA', 'TEHRATHUM', 'PANCHTHAR')
+        small_polygons_map = small_polygon_map.copy()
 
         # need these for dynamic text size and other stuff
         apparant_width = plt.gcf().get_size_inches()[0]*ax.figure.dpi
         width = 1200 if apparant_width<=1200 else apparant_width
 
-        fontsize = width/240 if x[annotation_field] in small_districts else width/270
+        fontsize = width/192 if x[annotation_field] in small_polygons_map.keys() else width/236
 
         # Generate labels from A-Z if small districts are encountered
-        if x[annotation_field] in small_districts:
-            ann_number = small_districts.index(x[annotation_field])
-
-            # converting the number to a representation of captial text i.e. 1->A, 2->B, etc.
-            text = f'{chr(ann_number+97).upper()}.'
-
-            # Text box to label small districts
-            ax.text(0.05, 0.3 - ann_number*width/108000, f'{text[:-1]} - {x[annotation_field].title()}: {x[annotation_value_field]}',
-                        fontsize=fontsize+1, transform=ax.transAxes, verticalalignment='top', weight='bold', bbox={'color': 'lightgray'})
+        if x[annotation_field] in small_polygons_map.keys():
+            text = small_polygons_map[x[annotation_field]]
         else:
             text = f'{x[annotation_field].title()}\n{x[annotation_value_field]}'
 
@@ -119,7 +113,9 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         ##################################################################################################################################
 
         ################# STATIC TRANSFORMATION LOGIC - TO DELETE AFTER DYNAMIC LOGIC IS IMPLEMENTED #####################################
+
         transformed_center = transform_nepal(polygon_center_coords, x[annotation_field])
+
         ##################################################################################################################################
 
         # To fix while adjusting for projections
