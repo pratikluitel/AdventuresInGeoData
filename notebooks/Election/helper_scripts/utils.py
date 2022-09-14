@@ -175,3 +175,23 @@ def annotate_polygons(ax: plt.Axes, **kwarg_dict) -> Callable:
         )
 
     return annotate_polygon
+
+
+def transform_to_capitalized_case(string: str, separator: str) -> str:
+    """
+    Returns a "Capitalized Case" output value from a
+     input value where words are in a separator-separated-case
+
+    Args:
+        string (str): input value, where words are separated by the separator
+        separator (str): separator
+
+    Returns:
+        str: Regular Case output value
+    """
+    split_string = string.split(separator)
+    op_string = ""
+    for idx, substr in enumerate(split_string):
+        op_string += ("" if idx == 0 else " ") + substr.capitalize()
+
+    return op_string
