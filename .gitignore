@@ -12,3 +12,7 @@ test.*
 
 # output folder
 visualizations
+
+# images
+*.jpg
+*.png
