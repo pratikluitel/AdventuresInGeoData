@@ -12,13 +12,8 @@ jobs:
         run: |
           curl -L -X POST \
             -H "Authorization: Bearer ${GITHUB_TOKEN}"\
-            ${COMMENTS_URL}
-            -d '{"body": "Thank you for opening the issue! Before I see the issue and start working on it, please make sure\ 
-            you do the following:\
-            - Explain the issue thoroughly\
-            - Give a reproducible case where the issue occurs consistantly\
-            - Attach relevant screenshots if appropriate\
-            "}'
+            ${COMMENTS_URL}\
+            -d '{"body": "Thank you for opening the issue! Before I see the issue and start working on it, please make sure you explain the issue thoroughly, give a reproducible case where the issue occurs consistantly and attach relevant screenshots if appropriate"}'
         env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
          COMMENTS_URL: ${{github.event.issue.comments_url}}
