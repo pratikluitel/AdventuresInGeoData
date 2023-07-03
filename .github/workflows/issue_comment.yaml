@@ -11,7 +11,7 @@ jobs:
       - name: "Create comment"
         run: |
           curl -L -X POST \
-            ${REPO_URL}/issues/${ISSUE_NUMBER}/comments
+            ${COMMENTS_URL}
             -d '{"body": "\ '
             Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
             you do the following:
@@ -21,6 +21,6 @@ jobs:
             '"}
         env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-         REPO_URL: ${{github.event.repo.url}}
+         COMMENTS_URL: ${{github.event.issue.comments_url}}
          ISSUE_NUMBER: ${{github.event.issue.number}}
     
