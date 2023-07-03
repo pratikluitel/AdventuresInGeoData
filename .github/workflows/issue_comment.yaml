@@ -23,7 +23,7 @@ jobs:
             - Give a reproducible case where the issue occurs consistantly
             - Attach relevant screenshots if appropriate
             '
-      - env:
+        env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 #          OWNER: ${{github.event.owner.login}}
          REPO_URL: ${{github.event.repo.url}}
