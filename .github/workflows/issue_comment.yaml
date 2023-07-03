@@ -11,6 +11,7 @@ jobs:
       - name: "Create comment"
         run: |
           curl -L -X POST \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}"\
             ${COMMENTS_URL}
             -d '{"body": "\ '
             Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
