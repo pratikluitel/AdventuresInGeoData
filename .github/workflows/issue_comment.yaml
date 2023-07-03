@@ -8,9 +8,6 @@ jobs:
   comment-with-gh-api:
     runs-on: ubuntu-latest
     steps:
-      - name: "dump github context to see what variables and data we can access"
-        run: echo '${{ toJSON(github.event) }}' | jq
-        shell: bash
       - name: "Create comment"
         run: |
           gh api -X POST \
