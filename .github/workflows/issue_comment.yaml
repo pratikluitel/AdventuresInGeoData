@@ -1,0 +1,31 @@
+name: Create a default comment on new issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment-with-gh-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "dump github context to see what variables and data we can access"
+        run: echo '${{ toJSON(github.event) }}' | jq
+        shell: bash
+      - name: "Create comment"
+        run: |
+          gh api -X POST \
+            http://api.github.com/repo/${ORGANIZATION}/${REPOSITORY}/issues/${ISSUE_NUMBER}/comment
+            -f body \ '
+            |
+            Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
+            you do the following:
+            - Explain the issue thoroughly
+            - Give a reproducible case where the issue occurs consistantly
+            - Attach relevant screenshots if appropriate
+            '
+      - env:
+         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+         ORGANIZATION: ${{github.event.organization.login}}
+         REPOSITORY: ${{github.event.repository.name}}
+         ISSUE_NUMBER: ${{github.event.issue.number}}
+    
