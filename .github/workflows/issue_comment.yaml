@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: "Create comment"
         run: |
-          curl -X POST \
+          curl -L -X POST \
             ${REPO_URL}/issues/${ISSUE_NUMBER}/comments
             -d '{"body": "\ '
             Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
