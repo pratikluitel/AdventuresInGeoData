@@ -16,7 +16,6 @@ jobs:
           gh api -X POST \
             ${REPO_URL}/issues/${ISSUE_NUMBER}/comments
             -f body \ '
-            |
             Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
             you do the following:
             - Explain the issue thoroughly
@@ -25,7 +24,6 @@ jobs:
             '
         env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-#          OWNER: ${{github.event.owner.login}}
          REPO_URL: ${{github.event.repo.url}}
          ISSUE_NUMBER: ${{github.event.issue.number}}
     
