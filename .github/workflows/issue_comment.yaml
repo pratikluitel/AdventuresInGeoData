@@ -13,13 +13,12 @@ jobs:
           curl -L -X POST \
             -H "Authorization: Bearer ${GITHUB_TOKEN}"\
             ${COMMENTS_URL}
-            -d '{"body": "\ '
-            Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
-            you do the following:
-            - Explain the issue thoroughly
-            - Give a reproducible case where the issue occurs consistantly
-            - Attach relevant screenshots if appropriate
-            '"}
+            -d '{"body": "Thank you for opening the issue! Before I see the issue and start working on it, please make sure\ 
+            you do the following:\
+            - Explain the issue thoroughly\
+            - Give a reproducible case where the issue occurs consistantly\
+            - Attach relevant screenshots if appropriate\
+            "}'
         env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
          COMMENTS_URL: ${{github.event.issue.comments_url}}
