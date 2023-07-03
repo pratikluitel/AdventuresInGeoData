@@ -10,15 +10,15 @@ jobs:
     steps:
       - name: "Create comment"
         run: |
-          gh api -X POST \
+          curl -X POST \
             ${REPO_URL}/issues/${ISSUE_NUMBER}/comments
-            -f body \ '
+            -d '{"body": "\ '
             Thank you for opening the issue! Before I see the issue and start working on it, please make sure 
             you do the following:
             - Explain the issue thoroughly
             - Give a reproducible case where the issue occurs consistantly
             - Attach relevant screenshots if appropriate
-            '
+            '"}
         env:
          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
          REPO_URL: ${{github.event.repo.url}}
